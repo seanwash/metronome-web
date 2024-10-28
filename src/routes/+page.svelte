@@ -1,2 +1,11 @@
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to read the documentation</p>
+<script lang="ts">
+	import Metronome from '../components/Metronome.svelte';
+</script>
+
+<svelte:head>
+	<title>Metronome</title>
+</svelte:head>
+
+<div class="flex h-screen w-screen items-center justify-center">
+	<Metronome />
+</div>
