@@ -46,21 +46,31 @@ class Metronome {
 	}
 
 	private playClick(audioContext: AudioContext) {
-		const oscillator = audioContext.createOscillator();
 		const destination = audioContext.destination;
 		const currentTime = audioContext.currentTime;
-		const gainNode = audioContext.createGain();
 		const decay = 0.05;
+		const endTime = currentTime + decay;
+		const volume = 0.5;
 
+		const oscillator = audioContext.createOscillator();
 		oscillator.type = 'sine';
 		oscillator.frequency.value = 650;
 
-		gainNode.gain.setValueAtTime(0.5, audioContext.currentTime);
-		gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + decay);
+		const gainNode = audioContext.createGain();
+		// This acts as a fade out. Start at set volume and then ramp down to almost silent.
+		gainNode.gain.setValueAtTime(volume, currentTime);
+		gainNode.gain.exponentialRampToValueAtTime(0.001, endTime);
 
-		oscillator.connect(destination);
+		oscillator.connect(gainNode);
+		gainNode.connect(destination);
+
 		oscillator.start();
-		oscillator.stop(currentTime + decay);
+		oscillator.stop(endTime);
+
+		oscillator.onended = () => {
+			oscillator.disconnect();
+			gainNode.disconnect();
+		};
 	}
 }
 
